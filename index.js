@@ -6,7 +6,7 @@ const app = express();
 app.use(express.static('pages'));
 
 // listen request by server on {port}
-const port = 3000 
+const port = 3000;
 app.listen(port, function () {
-  console.log('сервер запущен, доступ по адресу localhost:' + port);
+  console.log('server is running on localhost:' + port);
 });
