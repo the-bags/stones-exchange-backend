@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Inventory Page</title>
+		<script>
+			window.onload = function() {
+				const stones = ["Ruby (on Rails)", "Amethyst", "Moonstone", "Obsidian", "Pyrite"];
+				var el = document.getElementById("inventory");
+				el.textContent = stones;
+			};
+		</script>
+	</head>
+	<body>
+		<div><h3>Inventory</h3></div>
+		<div><a href="/"><h5>Back to Main</h5></a></div>
+		<div><textarea id="inventory" cols=70></textarea></div>
+	</body>
+</html>
