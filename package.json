@@ -1,16 +1,10 @@
 {
-  "name": "static-server",
-  "version": "1.0.0",
-  "description": "static-server",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Andrii Sviatogor",
-  "license": "ISC",
+  "name": "stonesExchange",
+  "version": "0.0.1",
   "dependencies": {
     "express": "^4.16.3",
     "mongodb": "^3.0.5",
-    "mongoose": "^5.0.12"
+    "mongoose": "^5.0.12",
+    "@types/express": "^4.11.1"
   }
 }
