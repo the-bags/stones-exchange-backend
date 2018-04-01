@@ -20,3 +20,5 @@ app.listen(port, function() {
   console.log('\nPress Ctrl+C to stop\n--------------------\n');
 });
 
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange');
