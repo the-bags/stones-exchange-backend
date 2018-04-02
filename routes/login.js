@@ -9,12 +9,10 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req,res, next) => {
-  console.log(req.body);
 
   // TODO check if user can login
   return User.findOne({
     name: req.body.name,
-    password: req.body.password,
   }, function(err, user) {
     if (err) {
       res.send({
@@ -22,16 +20,35 @@ router.post('/', (req,res, next) => {
         error: err
       });
     }
-    if (!user) {
-      res.send({
-        message: 'Access is denied!',
-        data: req.body
+    if (user) {
+      user.verifyPassword(req.body.password, function(err, isMatch) {
+        if (err) {
+          res.send({
+            message: 'Error Verify Password',
+            error: err
+          });
+          return next()
+        }
+        //Password did not match
+        if (!isMatch) {
+           res.send({
+            message: 'Password is not correct! Access is denied!',
+            data: req.body
+          })
+          return next();
+        }
+        res.send({
+          message: 'Congratulations. Access is allowed.',
+          data: req.body
+        });
+        return next();
       });
     } else {
       res.send({
-        message: 'Congratulations. Access is allowed.',
+        message: 'Error. User is not exists',
         data: req.body
       });
+      return next();
     }
   });
 
