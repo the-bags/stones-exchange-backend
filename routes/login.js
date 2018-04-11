@@ -11,7 +11,7 @@ router.post("/", (req, res, next) => {
 
     // TODO check if user can login
     return User.findOne({
-        name: req.body.name,
+        email: req.body.email,
     }, function(err, user) {
         if (err) {
             res.send({

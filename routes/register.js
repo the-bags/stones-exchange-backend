@@ -13,6 +13,7 @@ router.post("/", (req, res, next) => {
     user.name = req.body.name;
     user.email = req.body.email;
     user.password = req.body.password;
+    console.log(req.body);
 
     return user.save((err)=> {
         if (err)
