@@ -16,3 +16,19 @@ So, same requests
 * **POST**
     * http://localhost:3001/register - create new user
     * http://localhost:3001/login - check if user can login
+
+#### Use ESLint
+
+ESLint is pluggable linting utility for JavaScript.
+
+**Check to errors**
+
+```bash
+$  ./node_modules/.bin/eslint .
+```
+
+ **Automatically fix problems** (Magic button)
+
+ ```bash
+ $ ./node_modules/.bin/eslint . --fix
+ ```
