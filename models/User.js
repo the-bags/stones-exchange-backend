@@ -26,8 +26,8 @@ UsersSchema.methods.encryptPassword = async (password) => {
   return await bcrypt.hash(password, salt, null);
 };
 
-UsersSchema.methods.verifyPassword = async (password) => {
-  return await bcrypt.compare(password, this.password)
+UsersSchema.methods.verifyPassword = async (password, userPassword) => {
+  return await bcrypt.compare(password, userPassword)
 };
 
 

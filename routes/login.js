@@ -3,29 +3,19 @@ const User = require("../models/User");
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const dbUrl = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
+const DB_URL = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
 
 router.post("/", async (req, res) => {
   try {
-    await mongoose.connect(dbUrl);
-    const user = await User.findOne({
-      email: req.body.email,
-    });
+    await mongoose.connect(DB_URL);
+    const user = await User.findOne({ email: req.body.email });
 
-    if (user) {
-      user.verifyPassword(req.body.password, (err, isMatch) => {
-        if (err) {
-          res.status(500).send('password verification failure');
-        } else if (isMatch) {
-          res.sendStatus(200);
-        } else {
-          res.sendStatus(403);
-        }
-      })
-    } else {
-      // no user
-      res.sendStatus(403);
-    }
+    user
+      ? await user.verifyPassword(req.body.password, user.password)
+      ? res.sendStatus(200)
+      : res.sendStatus(403)
+      : res.sendStatus(403);
+
     mongoose.connection.close();
   } catch (err) {
     console.log(err);
