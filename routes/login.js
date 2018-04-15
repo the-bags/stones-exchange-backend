@@ -1,55 +1,35 @@
 const express = require("express");
-const User = require("../models/Users");
+const User = require("../models/User");
 const router = express.Router();
+const mongoose = require('mongoose');
 
-router.get("/", (req, res) => {
-    res.sendStatus("Try sending some data with POST");
-    res.end();
-});
+const dbUrl = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
 
-router.post("/", (req, res, next) => {
-
-    // TODO check if user can login
-    return User.findOne({
-        email: req.body.email,
-    }, function(err, user) {
-        if (err) {
-            res.send({
-                message: "Error DB",
-                error: err
-            });
-        }
-        if (user) {
-            user.verifyPassword(req.body.password, function(err, isMatch) {
-                if (err) {
-                    res.send({
-                        message: "Error Verify Password",
-                        error: err
-                    });
-                    return next();
-                }
-                //Password did not match
-                if (!isMatch) {
-                    res.send({
-                        message: "Password is not correct! Access is denied!",
-                        data: req.body
-                    });
-                    return next();
-                }
-                res.send({
-                    message: "Congratulations. Access is allowed.",
-                    data: req.body
-                });
-                return next();
-            });
-        } else {
-            res.send({
-                message: "Error. User is not exists",
-                data: req.body
-            });
-            return next();
-        }
+router.post("/", async (req, res) => {
+  try {
+    await mongoose.connect(dbUrl);
+    const user = await User.findOne({
+      email: req.body.email,
     });
+
+    if (user) {
+      user.verifyPassword(req.body.password, (err, isMatch) => {
+        if (err) {
+          res.status(500).send('password verification failure');
+        } else if (isMatch) {
+          res.sendStatus(200);
+        } else {
+          res.sendStatus(403);
+        }
+      })
+    } else {
+      // no user
+      res.sendStatus(403);
+    }
+    mongoose.connection.close();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = router;
