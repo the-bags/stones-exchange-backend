@@ -27,10 +27,10 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 io.on('connection', function(client){
     client.emit('customEmit', {
-        massege : 'Hi, I am server'
+        message : 'Hi, I am server'
     });
     client.emit('broadcast', {
-        massege: 'Hi, all'
+        message: 'Hi, all'
     });
     client.on('say_for_server', function(data){
         console.log('Said me client');
