@@ -3,7 +3,7 @@ const User = require('../models/User');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const DB_URL = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
+const DB_URL = require('../env').DB_URL;
 
 router.post('/', async (req, res) => {
   // TODO add data validation
