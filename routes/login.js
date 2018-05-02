@@ -12,7 +12,12 @@ router.post("/", async (req, res) => {
 
     user
       ? await user.verifyPassword(req.body.password, user.password)
-      ? res.sendStatus(200)
+      ? res.json({
+          user: {
+            name: user.name,
+            email: user.email
+          }
+      })
       : res.sendStatus(403)
       : res.sendStatus(403);
 
