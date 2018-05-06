@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
-const SALT_WORK_FACTOR = 5;
+require('dotenv').config();
 
 const UsersSchema = new Schema({
   name: {
@@ -21,7 +21,7 @@ const UsersSchema = new Schema({
 });
 
 UsersSchema.methods.encryptPassword = async (password) => {
-  const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+  const salt = await bcrypt.genSalt(process.env.SALT_WORK_FACTOR);
   console.log(password);
   return await bcrypt.hash(password, salt, null);
 };

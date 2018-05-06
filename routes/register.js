@@ -3,7 +3,7 @@ const User = require('../models/User');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const DB_URL = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
+require('dotenv').config();
 
 router.post('/', async (req, res) => {
   // TODO add data validation
@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
   user.email = req.body.email;
   user.password = await user.encryptPassword(req.body.password);
   try {
-    await mongoose.connect(DB_URL);
+    await mongoose.connect(process.env.DB_URL);
     console.log('connected to DB');
     const newUser = await user.save();
     console.log('added: ', newUser);

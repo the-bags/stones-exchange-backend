@@ -2,17 +2,23 @@ const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
 const mongoose = require('mongoose');
+require('dotenv').config()
 
-const DB_URL = 'mongodb://backend:stonespassword01@ds115579.mlab.com:15579/stones-exchange';
 
 router.post("/", async (req, res) => {
+  console.log('LogIn:',req.body);
+  // { email: 'admin@test.com', password: 'password' }
   try {
-    await mongoose.connect(DB_URL);
+    await mongoose.connect(process.env.DB_URL);
     const user = await User.findOne({ email: req.body.email });
-
     user
       ? await user.verifyPassword(req.body.password, user.password)
-      ? res.sendStatus(200)
+      ? res.json({
+          user: {
+            name: user.name,
+            email: user.email
+          }
+      })
       : res.sendStatus(403)
       : res.sendStatus(403);
 
