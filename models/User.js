@@ -21,8 +21,7 @@ const UsersSchema = new Schema({
 });
 
 UsersSchema.methods.encryptPassword = async (password) => {
-  const salt = await bcrypt.genSalt(process.env.SALT_WORK_FACTOR);
-  console.log(password);
+  const salt = await bcrypt.genSalt(parseInt(process.env.SALT_WORK_FACTOR));
   return await bcrypt.hash(password, salt, null);
 };
 

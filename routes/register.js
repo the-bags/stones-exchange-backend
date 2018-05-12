@@ -17,9 +17,15 @@ router.post('/', async (req, res) => {
     console.log('connected to DB');
     const newUser = await user.save();
     console.log('added: ', newUser);
-    res.end();
+    res.json({
+      user: {
+        name: newUser.name,
+        email: newUser.email
+      }
+  })
     mongoose.connection.close();
   } catch (err) {
+    res.err(err);
     console.log(err);
   }
 });
