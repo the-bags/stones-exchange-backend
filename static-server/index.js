@@ -7,7 +7,7 @@ app.use(express.static("pages"));
 app.use(express.static("js"));
 
 // listen request by server on {port}
-const port = 3000;
+const port = 8000;
 app.listen(port, function () {
     console.log("server is running on localhost:" + port);
 });
