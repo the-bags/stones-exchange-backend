@@ -3,6 +3,12 @@ const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
 require('dotenv').config();
 
+var StoneSchema = new Schema({
+  name: String,
+  color: String
+});
+
+
 const UsersSchema = new Schema({
   name: {
     type: String,
@@ -18,6 +24,9 @@ const UsersSchema = new Schema({
     required: true,
     unique: true,
   },
+  stones: {
+    type: [StoneSchema]
+  }
 });
 
 UsersSchema.methods.encryptPassword = async (password) => {
