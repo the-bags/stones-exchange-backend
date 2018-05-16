@@ -4,7 +4,8 @@ const bodyParser = require("body-parser");
 const cors = require('cors');
 require('dotenv').config()
 
-const port = process.env.PORT ? process.env.PORT : 3001;
+const portApi = process.env.PORT_API ? process.env.PORT_API : 8001;
+const portSocket = process.env.PORT_SOCKET ? process.env.PORT_SOCKET : 8002;
 
 app.use(cors());
 
@@ -20,10 +21,11 @@ app.use("/register", require("./routes/register"));
 app.use("/stones", require("./routes/stones"));
 
 
-app.listen(port, function() {
-    console.log("\n--------------------\nServer is running\n");
-    console.log("http://localhost:" + port);
-    console.log("\nPress Ctrl+C to stop\n--------------------\n");
+app.listen(portApi, function() {
+    console.log("\n--------------------------------\nServer is running\n");
+    console.log("API URL    http://localhost:" + portApi);
+    console.log("SOCKET URL http://localhost:" + portSocket);
+    console.log("\nPress Ctrl+C to stop\n--------------------------------\n");
 });
 
 const server = require('http').createServer(app);
@@ -44,4 +46,4 @@ io.on('connection', function(client){
     });
     console.log('connection');
 });
-server.listen(3002);
+server.listen(portSocket);
