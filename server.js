@@ -41,6 +41,18 @@ io.on('connection', function(client){
         console.log('Said me client');
         console.log(data);
     });
+
+    client.on('drop_stone', data => {
+        delete data.background;
+        console.log('\nDrop stone', data);
+        io.emit('drop_stone', data);
+    });
+    client.on('take_stone', data => {
+        delete data.background;
+        console.log('\nTake stone', data);
+        io.emit('take_stone', data);
+    });
+
     client.on('disconnect', function(){
         console.log('disconnect');
     });
