@@ -1,5 +1,8 @@
 const express = require("express");
 const User = require("../models/User");
+const Inventory = require("../models/Inventory");
+require('../models/Stone'); // <-- for populate 
+
 const router = express.Router();
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -9,9 +12,10 @@ router.post("/", async (req, res) => {
     try {
       await mongoose.connect(process.env.DB_URL);
       const user = await User.findOne({ email: req.body.email });
-      console.log(user.stones);
+      const inventory = await Inventory.findOne({ userId: user._id}).populate('stones');
+
       user
-        ? res.json(user.stones)
+        ? res.json(inventory.stones)
         : res.sendStatus(403);
   
       mongoose.connection.close();

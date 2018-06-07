@@ -13,7 +13,7 @@ const stones = [
     {name: 'Limestone', color: 'rgb(60,100,150)'},
     {name: 'Quartzite', color: 'rgb(200,100,100)'},
     {name: 'Slate', color: 'rgb(0,0,10)'},
-    {name: 'Marble', color: 'rgb(255,254,230)'},
+    {name: 'Marble', color: 'rgb(100,254,230)'},
     {name: 'Sandstone', color: 'rgb(200,50,60)'},
     {name: 'Ruby', color: 'rgb(240,50,50)'},
     {name: 'Anyolite', color: 'rgb(0,100,10)'},
@@ -46,7 +46,7 @@ async function run(){
         await mongoose.connection.db.dropCollection('inventories', (err) => err ? console.log(err) : console.log('drop inventories'));
         const inventory = new Inventory();
         inventory.userId = user._id;
-        inventory.stones = await initStones();
+        inventory.stones = await initStonesForInventory();
         await inventory.save();
         console.log('put invetories');
         mongoose.connection.close();
