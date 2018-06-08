@@ -30,6 +30,11 @@ app.listen(portApi, function() {
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+
+const CommonStone = require("./models/CommonStone");
+const mongoose = require('mongoose');
+
+
 io.on('connection', function(client){
     client.emit('customEmit', {
         message : 'Hi, I am server'
@@ -42,10 +47,22 @@ io.on('connection', function(client){
         console.log(data);
     });
 
-    client.on('drop_stone', data => {
-        delete data.background;
-        console.log('\nDrop stone', data);
-        io.emit('drop_stone', data);
+    client.on('drop_stone', async (stone) => {
+        delete stone.background;
+        console.log('\nDrop stone', stone);
+        try {/*
+            await mongoose.connect(process.env.DB_URL);
+            const commonStone = await CommonStone({
+                stone: mongoose.Types.ObjectId(stone._id),
+                x: stone.x,
+                y: stone.y
+            });
+            await commonStone.save();*/
+            io.emit('drop_stone', stone);
+            /*mongoose.connection.close();*/
+        } catch (err) {
+        console.log(err);
+        }
     });
     client.on('take_stone', data => {
         delete data.background;
