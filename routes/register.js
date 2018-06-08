@@ -1,24 +1,12 @@
 const express = require('express');
 const User = require('../models/User');
+const Inventory = require("../models/Inventory");
+const Stone = require("../models/Stone");
 const router = express.Router();
 const mongoose = require('mongoose');
+const _ = require('underscore');
 
 require('dotenv').config();
-
-function stones() {
-  let stones = [];
-  for (let i=0; i<7; i++) {
-    let r = 255 * Math.random() | 0;
-    let g = 255 * Math.random() | 0;
-    let b = 255 * Math.random() | 0;
-    let color = 'rgb(' + r + ',' + g + ',' + b + ')';
-    stones.push({
-      name: 'Unknown',
-      color: color
-    })
-  }
-  return stones;
-}
 
 router.post('/', async (req, res) => {
   // TODO add data validation
@@ -27,18 +15,24 @@ router.post('/', async (req, res) => {
   user.name = req.body.name;
   user.email = req.body.email;
   user.password = await user.encryptPassword(req.body.password);
-  user.stones = stones();
 
   try {
     await mongoose.connect(process.env.DB_URL);
+
     console.log('connected to DB');
     const newUser = await user.save();
     console.log('added: ', newUser);
+    const inventory = new Inventory();
+    
+    // create inventory
+    inventory.userId = user._id;
+    inventory.stones = await initStonesForInventory();
+    await inventory.save();
+    
     res.json({
       user: {
         name: newUser.name,
         email: newUser.email,
-        stones: newUser.stones
       }
   })
     mongoose.connection.close();
@@ -47,5 +41,11 @@ router.post('/', async (req, res) => {
     console.log(err);
   }
 });
+
+async function initStonesForInventory(){
+  // sample - produce a random sample from the list. 
+  // pluck - get only _id
+  return  _.sample(_.pluck(await Stone.find({},'_id'), '_id'), 7);
+}
 
 module.exports = router;
