@@ -7,7 +7,7 @@ It is server for stones. It use data bases **mongodb**.
 ```bash
 $ sudo npm install gulp -g
 $ npm install
-$ nmp start
+$ npm start
 ```
 So, same requests 
 
