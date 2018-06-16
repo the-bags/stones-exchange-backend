@@ -33,3 +33,21 @@ $  ./node_modules/.bin/eslint .
  ```bash
  $ ./node_modules/.bin/eslint . --fix
  ```
+
+ #### PS
+
+ If you see problem such as ...
+ 
+ ```
+ Error: watch  .../acorn-jsx/ ENOSPC
+    at FSWatcher.start (fs.js:1402:19)
+***
+ ```
+
+For fix 
+
+```bash
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+Solution from https://gist.github.com/brunoleles/ee689cac84599ab78e415748c241ccfc
