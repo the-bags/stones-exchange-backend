@@ -12,8 +12,9 @@ router.post("/", async (req, res) => {
     try {
       await mongoose.connect(process.env.DB_URL);
       const user = await User.findOne({ email: req.body.email });
+      console.log('get user');
       const inventory = await Inventory.findOne({ userId: user._id}).populate('stones');
-
+      console.log('get inventory');
       user
         ? res.json(inventory.stones)
         : res.sendStatus(403);

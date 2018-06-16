@@ -33,6 +33,7 @@ const io = require('socket.io')(server);
 
 const CommonStone = require("./models/CommonStone");
 const mongoose = require('mongoose');
+let commonSpace = {};
 
 
 io.on('connection', function(client){
@@ -50,6 +51,7 @@ io.on('connection', function(client){
     client.on('drop_stone', async (stone) => {
         delete stone.background;
         console.log('\nDrop stone', stone);
+        commonSpace[stone.x+','+stone.y] = stone;
         try {/*
             await mongoose.connect(process.env.DB_URL);
             const commonStone = await CommonStone({
@@ -64,8 +66,13 @@ io.on('connection', function(client){
         console.log(err);
         }
     });
+    client.on('get_space',()=>{
+        console.log('start');
+        io.emit('space', commonSpace);
+    });
     client.on('take_stone', data => {
         delete data.background;
+        delete commonSpace[data.x+','+data.y];
         console.log('\nTake stone', data);
         io.emit('take_stone', data);
     });

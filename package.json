@@ -1,6 +1,6 @@
 {
   "name": "stonesExchange",
-  "version": "0.0.1",  
+  "version": "0.0.1",
   "scripts": {
     "start": "gulp"
   },
