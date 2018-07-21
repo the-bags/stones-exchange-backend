@@ -7,19 +7,19 @@ const _ = require('underscore');
 
 require('dotenv').config();
 
-async function run(){
+async function run() {
     try {
         await mongoose.connect(process.env.DB_URL);
         await mongoose.connection.db.dropCollection('inventories', (err) => err ? console.log(err) : console.log('drop inventories'));
 
         let users = await User.find();
 
-        for (user of users) {
+        for (let user of users) {
             const inventory = new Inventory();
             inventory.userId = user._id;
             inventory.stones = await initStonesForInventory();
             await inventory.save();
-        };
+        }
 
         console.log('put invetories');
         mongoose.connection.close();
@@ -30,9 +30,9 @@ async function run(){
     }
 }
 
-async function initStonesForInventory(){
-    // sample - produce a random sample from the list. 
+async function initStonesForInventory() {
+    // sample - produce a random sample from the list.
     // pluck - get only _id
-    return  _.sample(_.pluck(await Stone.find({},'_id'), '_id'), 7);
+    return _.sample(_.pluck(await Stone.find({}, '_id'), '_id'), 7);
 }
 run();

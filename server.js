@@ -2,7 +2,8 @@
 const app = (require("express"))();
 const bodyParser = require("body-parser");
 const cors = require('cors');
-require('dotenv').config()
+const middlewares = require('./middlewares');
+require('dotenv').config();
 
 const portApi = process.env.PORT_API ? process.env.PORT_API : 8001;
 const portSocket = process.env.PORT_SOCKET ? process.env.PORT_SOCKET : 8002;
@@ -14,14 +15,17 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use("/", require("./routes/index"));
 app.use("/login", require("./routes/login"));
-app.use("/user", require("./routes/user"));
 app.use("/register", require("./routes/register"));
+
+app.use(middlewares.auth);
+
+app.use("/", require("./routes/index"));
+app.use("/user", require("./routes/user"));
 app.use("/stones", require("./routes/stones"));
 
 
-app.listen(portApi, function() {
+app.listen(portApi, function () {
     console.log("\n--------------------------------\nServer is running\n");
     console.log("API URL    http://localhost:" + portApi);
     console.log("SOCKET URL http://localhost:" + portSocket);
@@ -36,14 +40,14 @@ const mongoose = require('mongoose');
 let commonSpace = {};
 
 
-io.on('connection', function(client){
+io.on('connection', function (client) {
     client.emit('customEmit', {
-        message : 'Hi, I am server'
+        message: 'Hi, I am server'
     });
     client.emit('broadcast', {
         message: 'Hi, all'
     });
-    client.on('say_for_server', function(data){
+    client.on('say_for_server', function (data) {
         console.log('Said me client');
         console.log(data);
     });
@@ -51,7 +55,7 @@ io.on('connection', function(client){
     client.on('drop_stone', async (stone) => {
         delete stone.background;
         console.log('\nDrop stone', stone);
-        commonSpace[stone.x+','+stone.y] = stone;
+        commonSpace[stone.x + ',' + stone.y] = stone;
         try {/*
             await mongoose.connect(process.env.DB_URL);
             const commonStone = await CommonStone({
@@ -63,21 +67,21 @@ io.on('connection', function(client){
             io.emit('drop_stone', stone);
             /*mongoose.connection.close();*/
         } catch (err) {
-        console.log(err);
+            console.log(err);
         }
     });
-    client.on('get_space',()=>{
+    client.on('get_space', () => {
         console.log('start');
         io.emit('space', commonSpace);
     });
     client.on('take_stone', data => {
         delete data.background;
-        delete commonSpace[data.x+','+data.y];
+        delete commonSpace[data.x + ',' + data.y];
         console.log('\nTake stone', data);
         io.emit('take_stone', data);
     });
 
-    client.on('disconnect', function(){
+    client.on('disconnect', function () {
         console.log('disconnect');
     });
     console.log('connection');
