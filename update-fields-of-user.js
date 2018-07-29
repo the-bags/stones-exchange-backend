@@ -7,12 +7,12 @@ const _ = require('underscore');
 
 require('dotenv').config();
 
-async function run(){
+async function run() {
     try {
         await mongoose.connect(process.env.DB_URL);
         let users = await User.find();
 
-        for (user of  users) {
+        for (let user of users) {
             let name, email, password;
 
             name = user.name;
