@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 router.post("/", async (req, res) => {
-    console.log(req.body);
+    console.log('req.body: ', req.body);
     try {
         await mongoose.connect(process.env.DB_URL);
         const user = await User.findOne({ email: req.body.email });
