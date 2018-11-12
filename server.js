@@ -1,89 +1,65 @@
 'use strict';
-const app = (require("express"))();
+
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const middlewares = require('./middlewares');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const portApi = process.env.PORT_API ? process.env.PORT_API : 8001;
-const portSocket = process.env.PORT_SOCKET ? process.env.PORT_SOCKET : 8002;
+mongoose.connect(process.env.DB_URL).then(db => {
+    const app = (require("express"))();
+    app.use(cors());
 
-app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+    app.get("/", (req, res) => {
+        res.send("stones-exchange api-server");
+    });
 
-app.use("/login", require("./routes/login"));
-app.use("/register", require("./routes/register"));
+    app.use("/login", require("./routes/login"));
+    app.use("/register", require("./routes/register"));
 
-app.use(middlewares.auth);
+    app.use(middlewares.auth);
 
-app.use("/", require("./routes/index"));
-app.use("/user", require("./routes/user"));
-app.use("/stones", require("./routes/stones"));
+    app.use("/user", require("./routes/user"));
+    app.use("/stones", require("./routes/stones"));
 
 
-app.listen(portApi, function () {
-    console.log("\n--------------------------------\nServer is running\n");
-    console.log("API URL    http://localhost:" + portApi);
-    console.log("SOCKET URL http://localhost:" + portSocket);
-    console.log("\nPress Ctrl+C to stop\n--------------------------------\n");
+    app.listen(process.env.PORT_API || 8001, function () {
+        console.log("\n--------------------------------\nServer is running\n");
+        console.log("API URL    http://localhost:" + process.env.PORT_API || 8001);
+        console.log("SOCKET URL http://localhost:" + process.env.PORT_SOCKET || 8002);
+        console.log("\nPress Ctrl+C to stop\n--------------------------------\n");
+    });
+
+    const server = require('http').createServer(app);
+    const io = require('socket.io')(server);
+
+    let commonSpace = {};
+
+    io.on('connection', function (client) {
+
+        client.on('drop_stone', async (stone) => {
+            delete stone.background;
+            commonSpace[stone.x + ',' + stone.y] = stone;
+            try {
+                io.emit('drop_stone', stone);
+            } catch (err) {
+                console.log(err);
+            }
+        });
+        client.on('get_space', () => {
+            io.emit('space', commonSpace);
+        });
+        client.on('take_stone', data => {
+            delete data.background;
+            delete commonSpace[data.x + ',' + data.y];
+            io.emit('take_stone', data);
+        });
+    });
+
+    server.listen(process.env.PORT_SOCKET || 8002);
 });
-
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
-
-const CommonStone = require("./models/CommonStone");
-const mongoose = require('mongoose');
-let commonSpace = {};
-
-
-io.on('connection', function (client) {
-    client.emit('customEmit', {
-        message: 'Hi, I am server'
-    });
-    client.emit('broadcast', {
-        message: 'Hi, all'
-    });
-    client.on('say_for_server', function (data) {
-        console.log('Said me client');
-        console.log(data);
-    });
-
-    client.on('drop_stone', async (stone) => {
-        delete stone.background;
-        console.log('\nDrop stone', stone);
-        commonSpace[stone.x + ',' + stone.y] = stone;
-        try {/*
-            await mongoose.connect(process.env.DB_URL);
-            const commonStone = await CommonStone({
-                stone: mongoose.Types.ObjectId(stone._id),
-                x: stone.x,
-                y: stone.y
-            });
-            await commonStone.save();*/
-            io.emit('drop_stone', stone);
-            /*mongoose.connection.close();*/
-        } catch (err) {
-            console.log(err);
-        }
-    });
-    client.on('get_space', () => {
-        console.log('start');
-        io.emit('space', commonSpace);
-    });
-    client.on('take_stone', data => {
-        delete data.background;
-        delete commonSpace[data.x + ',' + data.y];
-        console.log('\nTake stone', data);
-        io.emit('take_stone', data);
-    });
-
-    client.on('disconnect', function () {
-        console.log('disconnect');
-    });
-    console.log('connection');
-});
-server.listen(portSocket);

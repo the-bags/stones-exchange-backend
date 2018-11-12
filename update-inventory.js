@@ -10,7 +10,7 @@ require('dotenv').config();
 async function run() {
     try {
         await mongoose.connect(process.env.DB_URL);
-        await mongoose.connection.db.dropCollection('inventories', (err) => err ? console.log(err) : console.log('drop inventories'));
+        await mongoose.connection.db.dropCollection('inventories');
 
         let users = await User.find();
 
@@ -21,10 +21,8 @@ async function run() {
             await inventory.save();
         }
 
-        console.log('put invetories');
         mongoose.connection.close();
 
-        console.log('Write to db is successfully!');
     } catch (err) {
         console.log(err);
     }

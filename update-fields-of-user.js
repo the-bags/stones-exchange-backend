@@ -30,8 +30,6 @@ async function run() {
             await user.save();
         }
         mongoose.connection.close();
-
-        console.log('Write to db is successfully!');
     } catch (err) {
         console.log(err);
     }
